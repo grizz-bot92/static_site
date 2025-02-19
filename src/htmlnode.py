@@ -14,6 +14,14 @@ class HTMLNode:
         formatted_list = [f'{key}="{value}"' for key, value in self.props.items()]
          
         return " " + " ".join(formatted_list)
+    
+    def __eq__(self, other):
+        return (
+            self.tag == other.tag and
+            self.value == other.value and
+            self.children == other.children and
+            self.props == other.props
+            )
 
     def __repr__(self):
         return f'HTMLNode(TAG: {self.tag}, VALUE: {self.value}, CHILDREN: {self.children}, PROP:{self.props})'
