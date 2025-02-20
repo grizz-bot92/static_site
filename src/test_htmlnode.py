@@ -1,5 +1,5 @@
 import unittest
-from htmlnode import HTMLNode, LeafNode
+from htmlnode import HTMLNode, LeafNode, ParentNode
 
 class testHTMLNode(unittest.TestCase):
 
@@ -29,5 +29,38 @@ class TestLeafNode(unittest.TestCase):
         node = LeafNode(None, "Hello")
         self.assertEqual(node.to_html(), "Hello")
 
+class TestParentNode(unittest.TestCase):
+
+    def test_no_children(self):
+        node = ParentNode("p", [])
+        self.assertEqual(node.to_html(), '<p></p>')
+    
+    def test_one_child(self):
+        node = ParentNode(
+            "p", [
+                LeafNode("b", "Bold text")
+            ]
+        )
+
+        self.assertEqual(node.to_html(), '<p><b>Bold text</b></p>')
+
+    def test_many_children(self):
+        node = ParentNode("div", [
+            ParentNode("p", [
+                LeafNode("i", "Italic text")
+            ]),
+
+            ParentNode("p", [
+                LeafNode("b", "Bold text")
+            ])
+        ])
+
+        self.assertEqual(node.to_html(), '<div><p><i>Italic text</i></p><p><b>Bold text</b></p></div>')
+    
+    def raise_error(self):
+        with self.assertRaises(ValueError):
+            node = ParentNode("p", None)
+            node.to_html()
+            
 if __name__ == "__main__":
     unittest.main()
