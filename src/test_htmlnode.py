@@ -1,5 +1,6 @@
 import unittest
-from htmlnode import HTMLNode, LeafNode, ParentNode
+from htmlnode import *
+from textnode import *
 
 class testHTMLNode(unittest.TestCase):
 
@@ -61,6 +62,38 @@ class TestParentNode(unittest.TestCase):
         with self.assertRaises(ValueError):
             node = ParentNode("p", None)
             node.to_html()
-            
+
+def test_text_node_to_html_node():
+    node = TextNode("Hello", TextType.TEXT)
+    html_node = text_node_to_html_node(node)
+    assert html_node.tag == None
+    assert html_node.value == "Hello"
+    assert html_node.props == None
+
+    node = TextNode("Bold text", TextType.BOLD)
+    html_node = text_node_to_html_node(node)
+    assert html_node.tag == 'b'
+    assert html_node.value == 'Bold text'
+
+    node = TextNode('Italic text', TextType.ITALIC)
+    html_node = text_node_to_html_node(node)
+    assert html_node.tag == 'i'
+    assert html_node.value == 'Italic text'
+
+    node = TextNode('Link', TextType.LINK, "https://boot.dev")
+    html_node = text_node_to_html_node(node)
+    assert html_node.tag == 'a'
+    assert html_node.value == 'Link'
+    assert html_node.props == {'href':"https://boot.dev"}
+
+    node = TextNode('image', TextType.IMAGE, "https://boot.dev")
+    html_node = text_node_to_html_node(node)
+    assert html_node.tag == 'img'
+    assert html_node.value == ''
+    assert html_node.props == {"src": "https://boot.dev",
+                               "alt": "image"}
+
+
+
 if __name__ == "__main__":
     unittest.main()
