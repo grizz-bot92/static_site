@@ -63,35 +63,40 @@ class TestParentNode(unittest.TestCase):
             node = ParentNode("p", None)
             node.to_html()
 
-def test_text_node_to_html_node():
-    node = TextNode("Hello", TextType.TEXT)
-    html_node = text_node_to_html_node(node)
-    assert html_node.tag == None
-    assert html_node.value == "Hello"
-    assert html_node.props == None
+class TestNodeToHTML(unittest.TestCase):
 
-    node = TextNode("Bold text", TextType.BOLD)
-    html_node = text_node_to_html_node(node)
-    assert html_node.tag == 'b'
-    assert html_node.value == 'Bold text'
+    def test_text(self):
+        node = TextNode("Hello", TextType.TEXT)
+        html_node = text_node_to_html_node(node)
+        self.assertEqual(html_node.tag, None)
+        self.assertEqual(html_node.value, "Hello")
 
-    node = TextNode('Italic text', TextType.ITALIC)
-    html_node = text_node_to_html_node(node)
-    assert html_node.tag == 'i'
-    assert html_node.value == 'Italic text'
+    def test_bold(self):
+        node = TextNode("Bold text", TextType.BOLD)
+        html_node = text_node_to_html_node(node)
+        self.assertEqual(html_node.tag, 'b')
+        self.assertEqual (html_node.value, 'Bold text')
 
-    node = TextNode('Link', TextType.LINK, "https://boot.dev")
-    html_node = text_node_to_html_node(node)
-    assert html_node.tag == 'a'
-    assert html_node.value == 'Link'
-    assert html_node.props == {'href':"https://boot.dev"}
+    def test_italic(self):
+        node = TextNode('Italic text', TextType.ITALIC)
+        html_node = text_node_to_html_node(node)
+        self.assertEqual (html_node.tag, 'i')
+        self.assertEqual (html_node.value, 'Italic text')
 
-    node = TextNode('image', TextType.IMAGE, "https://boot.dev")
-    html_node = text_node_to_html_node(node)
-    assert html_node.tag == 'img'
-    assert html_node.value == ''
-    assert html_node.props == {"src": "https://boot.dev",
-                               "alt": "image"}
+    def test_link(self):
+        node = TextNode('Link', TextType.LINK, "https://boot.dev")
+        html_node = text_node_to_html_node(node)
+        self.assertEqual(html_node.tag, 'a')
+        self.assertEqual(html_node.value, 'Link')
+        self.assertEqual(html_node.props, {'href':"https://boot.dev"})
+
+    def test_image(self):
+        node = TextNode('image', TextType.IMAGE, "https://boot.dev")
+        html_node = text_node_to_html_node(node)
+        self.assertEqual(html_node.tag, 'img')
+        self.assertEqual(html_node.value,  '')
+        self.assertEqual(html_node.props, {"src": "https://boot.dev",
+                                "alt": "image"})
 
 
 

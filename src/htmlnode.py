@@ -1,4 +1,3 @@
-from textnode import TextNode, TextType
 
 class HTMLNode:
     def __init__(self, tag=None, value=None, children=None, props=None):
@@ -30,7 +29,7 @@ class HTMLNode:
 
 class LeafNode(HTMLNode):
     def __init__(self, tag, value, props=None):
-        super().__init__(tag, value, props)
+        super().__init__(tag, value, props=props)
 
     
     def to_html(self):
@@ -67,22 +66,3 @@ class ParentNode(HTMLNode):
         
         return f'<{self.tag}>{result}</{self.tag}>'
 
-def text_node_to_html_node(text_node):  
-    match text_node.text_type:
-        case TextType.TEXT:
-            return LeafNode(text_node.value)
-        case TextType.BOLD:
-            return LeafNode('b', text_node.value)
-        case TextType.ITALIC:
-            return LeafNode('i', text_node.value)
-        case TextType.CODE:
-            return LeafNode('code', text_node.value)
-        case TextType.LINK:
-            props = {"href": text_node.url}
-            return LeafNode('a', text_node.value, props)
-        case TextType.IMAGE:
-            props = {"src": text_node.url,
-                     "alt": text_node.value}
-            return LeafNode('img', '', props)
-        case _:
-            raise Exception('Empty values') 
