@@ -85,3 +85,119 @@ class TestLinks(unittest.TestCase):
         text = "There are no images"
         result = extract_markdown_images(text)
         self.assertEqual(result, [])
+    
+
+class TestSplitImages(unittest.TestCase):
+    def test_image_split(self):
+        node = TextNode('This is text with an ![image](image.png) image and extra words', TextType.TEXT)
+        new_node = split_nodes_image([node])
+
+        self.assertListEqual(
+            [
+            TextNode('This is text with an ', TextType.TEXT),
+            TextNode('image', TextType.IMAGE, 'image.png'),
+            TextNode(' image and extra words', TextType.TEXT)
+        ], new_node
+        )
+
+    def test_multiple_images(self):
+        node = TextNode('This is text with ![image](url) ![image2](url2) images', TextType.TEXT)
+        new_node = split_nodes_image([node])
+
+        self.assertListEqual(
+            [
+                TextNode('This is text with ', TextType.TEXT),
+                TextNode('image', TextType.IMAGE, 'url'),
+                TextNode('image2', TextType.IMAGE, 'url2'),
+                TextNode(' images', TextType.TEXT)
+            ], new_node
+        )
+    
+    def test_no_images(self):
+        node = TextNode('There are no images', TextType.TEXT)
+        new_node = split_nodes_image([node])
+
+        self.assertListEqual([
+            TextNode('There are no images', TextType.TEXT)
+        ], new_node
+        )
+
+
+class TestSplitLinks(unittest.TestCase):
+    def split_link(self):
+        node = TextNode('There is one [link](url) in this text', TextType.TEXT)
+        new_node = split_nodes_link([node])
+
+        self.assertListEqual(
+            [
+                TextNode('There is one ', TextType.TEXT),
+                TextNode('link', TextType.LINK, 'url'),
+                TextNode(' in this text')
+            ], new_node
+        )
+
+    def split_many_links(self):
+        node = TextNode('There are [link](url) many links [link2](url2) in this text', TextType.TEXT)
+        new_node = split_nodes_link([node])
+
+        self.assertListEqual(
+            [
+                TextNode('There are ', TextType.TEXT),
+                TextNode('link', TextType.LINK, 'url'),
+                TextNode(' many links ', TextType.TEXT),
+                TextNode('link2', TextType.LINK, 'url2'),
+                TextNode(' in this text', TextType.TEXT)
+            ], new_node
+        )
+
+    def test_no_links(self):
+        node = TextNode('There are no links', TextType.TEXT)
+        new_node = split_nodes_link([node])
+
+        self.assertListEqual(
+            [
+                TextNode('There are no links', TextType.TEXT)
+            ], new_node
+        )
+
+class TestSplitTextNodes(unittest.TestCase):
+    def test_two_splits(self):
+        text = 'This is text with **bold** and ![image](url) and image'
+        new_node = text_to_textnodes(text)
+
+        self.assertListEqual(
+            [
+                TextNode('This is text with ', TextType.TEXT),
+                TextNode('bold', TextType.BOLD),
+                TextNode(' and ', TextType.TEXT),
+                TextNode('image', TextType.IMAGE, 'url'),
+                TextNode(' and image', TextType.TEXT)
+            ], new_node
+        )
+    
+    def test_italic_split(self):
+        text = 'Im over this project please let me *quit*'
+        new_node = text_to_textnodes(text)
+
+        self.assertListEqual(
+            [
+                TextNode('Im over this project please let me ', TextType.TEXT),
+                TextNode('quit', TextType.ITALIC)
+            ], new_node
+        )
+
+    def many_splits(self):
+        text = 'This is **the last** test with [link](url) im *done*'
+        new_node = text_to_textnodes(text)
+
+        self.assertEqualList(
+            [
+                TextNode('This is ', TextType.TEXT),
+                TextNode('the last', TextType.BOLD),
+                TextNode(' test with'),
+                TextNode('link', TextType.LINK, 'url'),
+                TextNode('im', TextType.TEXT),
+                TextNode('done', TextType.ITALIC)
+            ], new_node
+        )
+
