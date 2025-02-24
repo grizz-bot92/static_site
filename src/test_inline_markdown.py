@@ -124,7 +124,7 @@ class TestSplitImages(unittest.TestCase):
 
 
 class TestSplitLinks(unittest.TestCase):
-    def split_link(self):
+    def test_split_link(self):
         node = TextNode('There is one [link](url) in this text', TextType.TEXT)
         new_node = split_nodes_link([node])
 
@@ -132,11 +132,11 @@ class TestSplitLinks(unittest.TestCase):
             [
                 TextNode('There is one ', TextType.TEXT),
                 TextNode('link', TextType.LINK, 'url'),
-                TextNode(' in this text')
+                TextNode(' in this text', TextType.TEXT)
             ], new_node
         )
 
-    def split_many_links(self):
+    def test_split_many_links(self):
         node = TextNode('There are [link](url) many links [link2](url2) in this text', TextType.TEXT)
         new_node = split_nodes_link([node])
 
@@ -186,17 +186,17 @@ class TestSplitTextNodes(unittest.TestCase):
             ], new_node
         )
 
-    def many_splits(self):
+    def test_many_splits(self):
         text = 'This is **the last** test with [link](url) im *done*'
         new_node = text_to_textnodes(text)
 
-        self.assertEqualList(
+        self.assertListEqual(
             [
                 TextNode('This is ', TextType.TEXT),
                 TextNode('the last', TextType.BOLD),
-                TextNode(' test with'),
+                TextNode(' test with ', TextType.TEXT),
                 TextNode('link', TextType.LINK, 'url'),
-                TextNode('im', TextType.TEXT),
+                TextNode(' im ', TextType.TEXT),
                 TextNode('done', TextType.ITALIC)
             ], new_node
         )
