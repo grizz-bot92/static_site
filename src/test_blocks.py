@@ -1,7 +1,7 @@
 import unittest
-from block_markdown import (
-    markdown_to_blocks,
-)
+from block_markdown import markdown_to_blocks
+from blocktypes import block_to_block_type, BlockType
+
 
 class TestBlocks(unittest.TestCase):
     def test_split_block(self):
@@ -48,3 +48,18 @@ class TestBlocks(unittest.TestCase):
             'do i need?'
 
         ], block)
+
+    def test_block_to_block_type(self):
+        block = ('# heading')
+        self.assertEqual(block_to_block_type(block), BlockType.HEADING)
+        block = ('```\ncode\n```')
+        self.assertEqual(block_to_block_type(block), BlockType.CODE)
+        block = ('> quote\n> quote')
+        self.assertEqual(block_to_block_type(block), BlockType.QUOTE)
+        block = ('1. Hello\n2. World')
+        self.assertEqual(block_to_block_type(block), BlockType.ORDERED_LIST)
+        block = ('- Un\n- Ordered')
+        self.assertEqual(block_to_block_type(block), BlockType.UNORDERED_LIST)
+        block = ('This is a paragraph. It has no starting special char.')
+        self.assertEqual(block_to_block_type(block), BlockType.PARAGRAPH)
+
